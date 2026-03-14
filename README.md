@@ -1,8 +1,9 @@
 # HostelMate
 
-HostelMate is a web platform designed to help students discover hostels near selected colleges. The platform allows users to explore hostel listings and view ratings and reviews submitted by verified students.
+HostelMate is a web platform designed to help students discover hostels near selected colleges. 
+The platform allows users to explore hostel listings and view ratings and reviews submitted only by verified students.
 
-This project is a clean, full-stack application built using Node.js, Express, MySQL, and vanilla frontend technologies (HTML/CSS/JS).
+This project is a full-stack application built using Node.js, Express, MySQL, and vanilla frontend technologies (HTML/CSS/JS).
 
 ---
 
@@ -113,5 +114,6 @@ HostelMate
 - **Future Improvements**:
     - Implement more robust data validation.
     - Add advanced hostel amenities and location maps.
+    - Add request hostel listing feature for users.
     - Enhance UI with more interactive components.
     - Add automated testing suites.
