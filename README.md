@@ -2,7 +2,7 @@
 
 HostelMate is a web platform designed to help students discover hostels near selected colleges. The platform allows users to explore hostel listings and view ratings and reviews submitted by verified students.
 
-This project is a clean, full-stack application built for students to learn Node.js, Express, MySQL, and vanilla frontend technologies (HTML/CSS/JS).
+This project is a clean, full-stack application built using Node.js, Express, MySQL, and vanilla frontend technologies (HTML/CSS/JS).
 
 ---
 
@@ -27,8 +27,8 @@ This project is a clean, full-stack application built for students to learn Node
 - MySQL (with `mysql2` driver)
 
 **Frontend**
-- HTML5 (Semantic Structure)
-- Vanilla CSS (Modern, Responsive Design)
+- HTML5
+- Vanilla CSS
 - Vanilla JavaScript (Fetch API)
 
 ---
@@ -38,17 +38,17 @@ This project is a clean, full-stack application built for students to learn Node
 ```
 HostelMate
 ├── backend
-│   ├── controllers     # Business logic for auth, admin, and hostels
-│   ├── db              # Database connection and schema.sql
-│   ├── middleware      # Authentication guards
+│   ├── controllers     # logic for auth, admin, and hostels
+│   ├── db              # database connection and schema.sql
+│   ├── middleware      # authentication guards
 │   └── routes          # API endpoint definitions
 ├── frontend
-│   ├── css             # Global styles (styles.css)
-│   ├── js              # Client-side logic (main.js)
-│   └── *.html          # UI pages (index, login, profile, etc.)
-├── uploads             # Student ID card images (gitignored)
-├── server.js           # Main entry point
-├── .env                # Environment variables
+│   ├── css             # styles
+│   ├── js              # client-side logic
+│   └── *.html          # UI pages
+├── uploads             # student ID images
+├── server.js           # entry point
+├── .env                
 └── README.md
 ```
 
@@ -76,7 +76,9 @@ HostelMate
    - Run the SQL script found in `backend/db/schema.sql` to initialize tables and seed sample data.
 
 4. **Configure Environment**
-   Update the `.env` file in the root directory:
+   - Copy the `.env.example` file and rename it to `.env`.
+   - Update the values in the `.env` file with your local MySQL credentials:
+
    ```env
    PORT=5000
    DB_HOST=localhost
