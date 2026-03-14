@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Hostels - HostelMate Simple</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .college-selector { background: var(--primary); color: white; padding: 3rem 0; border-bottom: 4px solid var(--accent); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container d-flex justify-between align-center">
+            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
+            <ul class="nav-links" id="authLinks"></ul>
+        </div>
+    </nav>
+
+    <!-- College Selection Step -->
+    <div class="college-selector">
+        <div class="container text-center">
+            <h2 style="color:white; margin-bottom:0.5rem">Select Your College</h2>
+            <p style="color:#cbd5e1; margin-bottom:1.5rem">Choose your campus to see nearby hostels and PGs.</p>
+            <div class="d-flex justify-center">
+                <select id="collegeSelect" class="form-control" style="max-width:400px; padding:0.8rem; font-size:1.1rem">
+                    <option value="">-- Choose a College --</option>
+                </select>
+                <button type="button" id="searchCollegesBtn" class="btn btn-primary" style="margin-left:0.5rem; padding:0.8rem 1.5rem">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hostels Interface (Hidden by default until a college is selected) -->
+    <div class="container mt-4 mb-4 hidden" id="hostelsInterface">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2 id="resultsTitle">Hostels Near Campus</h2>
+        </div>
+        
+        <form class="filter-bar" id="filterForm">
+            <div class="form-group">
+                <label for="search">Hostel Name</label>
+                <input type="text" id="search" name="search" class="form-control" placeholder="Search...">
+            </div>
+            <div class="form-group">
+                <label for="maxPrice">Max Price (₹)</label>
+                <input type="number" id="maxPrice" name="maxPrice" class="form-control" placeholder="e.g. 7000">
+            </div>
+            <div class="form-group" style="min-width: 150px;">
+                <label for="minRating">Minimum Rating</label>
+                <select id="minRating" name="minRating" class="form-control">
+                    <option value="">Any Rating</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                    <option value="2">2+ Stars</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem; height: 100%;">Filter</button>
+            <button type="button" id="clearBtn" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; height: 100%;">Clear</button>
+        </form>
+        
+        <div id="loading" class="text-center my-4 hidden">
+            <p>Loading hostels...</p>
+        </div>
+        
+        <div id="hostelList" class="grid"></div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const collegeSelect = document.getElementById('collegeSelect');
+            const searchCollegesBtn = document.getElementById('searchCollegesBtn');
+            const hostelsInterface = document.getElementById('hostelsInterface');
+            const form = document.getElementById('filterForm');
+            const clearBtn = document.getElementById('clearBtn');
+            const listEl = document.getElementById('hostelList');
+            const loading = document.getElementById('loading');
+            const resultsTitle = document.getElementById('resultsTitle');
+
+            // 1. Load colleges on page load
+            try {
+                const colleges = await fetchAPI('/hostels/colleges');
+                colleges.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    collegeSelect.appendChild(opt);
+                });
+            } catch (error) {
+                console.error("Could not load colleges:", error);
+                collegeSelect.innerHTML = `<option value="">Error loading colleges.</option>`;
+            }
+
+            // 2. Fetch Hostels Function
+            let currentCollegeId = null;
+            let currentCollegeName = '';
+
+            const fetchHostels = async (qsParams = '') => {
+                loading.classList.remove('hidden');
+                listEl.innerHTML = '';
+                
+                try {
+                    // Always include the selected college
+                    const finalQuery = qsParams ? `${qsParams}&college_id=${currentCollegeId}` : `?college_id=${currentCollegeId}`;
+                    const hostels = await fetchAPI(`/hostels${finalQuery}`);
+                    
+                    // Filter down to the selected college purely on the frontend (or via a new backend filter query we didn't add yet... Wait, we didn't add college_id to backend filter!)
+                    // Since it's simple, we'll just filter the returning list if the backend ignores college_id. 
+                    // Let's filter here:
+                    const collegeHostels = hostels.filter(h => h.college_id == currentCollegeId);
+
+                    if (collegeHostels.length === 0) {
+                        listEl.innerHTML = '<p class="text-muted" style="grid-column: 1 / -1;">No hostels match your criteria for this college.</p>';
+                    } else {
+                        listEl.innerHTML = collegeHostels.map(h => `
+                            <div class="card">
+                                <div class="card-header border-0 pb-0">
+                                    <div class="d-flex justify-between align-start mb-1">
+                                        <h3 class="card-title">${h.name}</h3>
+                                        <div style="white-space:nowrap">${renderStars(h.avg_rating)}</div>
+                                    </div>
+                                    <p class="card-meta">
+                                        <span class="text-muted" style="font-size: 0.9rem; font-weight: 500;">📍 ${h.location_label}</span>
+                                    </p>
+                                </div>
+                                <div class="card-body">
+                                    <p style="font-size:0.95rem; color:var(--text-muted); height:4.5em; overflow:hidden;">
+                                        ${h.description}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex flex-column">
+                                        <span style="font-weight:700; font-size:1.1rem; color:var(--text-main);">₹${h.price_per_month} <span style="font-size:0.8rem; font-weight:normal; color:var(--text-muted);">/mo</span></span>
+                                        <span style="font-size:0.8rem; color:var(--text-muted);">${h.review_count} Reviews</span>
+                                    </div>
+                                    <a href="/hostel-detail.html?id=${h.id}" class="btn btn-primary" style="padding:0.5rem 1rem;">View Details</a>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } catch (error) {
+                    listEl.innerHTML = `<p style="color:red; grid-column: 1 / -1;">Error loading hostels: ${error.message}</p>`;
+                } finally {
+                    loading.classList.add('hidden');
+                }
+            };
+
+            // 3. Search College Event
+            searchCollegesBtn.addEventListener('click', () => {
+                if (!collegeSelect.value) {
+                    alert('Please select a college first.');
+                    return;
+                }
+                currentCollegeId = collegeSelect.value;
+                currentCollegeName = collegeSelect.options[collegeSelect.selectedIndex].text;
+                
+                resultsTitle.textContent = `Hostels near ${currentCollegeName}`;
+                hostelsInterface.classList.remove('hidden');
+                
+                // Fetch initial list for college
+                fetchHostels('');
+            });
+
+            // 4. Filter submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const searchParams = new URLSearchParams();
+                
+                for (const [key, value] of formData.entries()) {
+                    if (value) searchParams.append(key, value);
+                }
+                
+                const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
+                fetchHostels(qs);
+            });
+
+            // 5. Clear filters
+            clearBtn.addEventListener('click', () => {
+                form.reset();
+                fetchHostels('');
+            });
+        });
+    </script>
+</body>
+</html>

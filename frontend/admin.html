@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HostelMate Simple</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container d-flex justify-between align-center">
+            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
+            <ul class="nav-links" id="authLinks"></ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4 mb-4">
+        <h2 class="mb-3">Admin Dashboard</h2>
+        <div id="adminError" class="alert alert-error hidden"></div>
+        <div id="adminSuccess" class="alert alert-success hidden"></div>
+
+        <div class="card p-0" style="padding: 0; box-shadow: var(--shadow-md);">
+            <div class="card-header pt-4 px-4 pb-3" style="border-bottom: 2px solid #f1f5f9;">
+                <h3 class="card-title text-primary">User Verifications</h3>
+                <p class="text-muted" style="font-size: 0.95rem;">Review student submissions and verify their ID cards to approve them for posting reviews.</p>
+            </div>
+            
+            <div class="table-responsive">
+                <table style="margin-top: 0; border: none; border-radius: 0;">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email Address</th>
+                            <th>Registered On</th>
+                            <th>ID Card</th>
+                            <th>Status</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr><td colspan="6" class="text-center py-4 text-muted">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getAuthUser();
+            if (!user || user.role !== 'admin') {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            await loadUsers();
+        });
+
+        async function loadUsers() {
+            try {
+                const users = await fetchAPI('/admin/users');
+                const tbody = document.getElementById('usersTable');
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No students registered yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td style="font-weight:600; color:var(--text-main);">${u.full_name}</td>
+                        <td style="color:var(--text-muted);">${u.email}</td>
+                        <td style="color:var(--text-muted); font-size:0.85rem;">${new Date(u.created_at).toLocaleDateString()}</td>
+                        <td class="text-center" style="width: 120px;">
+                            ${u.id_card_path 
+                                ? `<a href="${u.id_card_path}" target="_blank" title="Click to enlarge">
+                                     <img src="${u.id_card_path}" class="id-thumbnail" alt="ID Card">
+                                   </a>` 
+                                : '<span class="text-muted" style="font-size:0.75rem; font-style:italic;">No image uploaded</span>'}
+                        </td>
+                        <td style="width: 100px;"><span class="badge badge-${u.verification_status}">${u.verification_status}</span></td>
+                        <td class="text-right" style="width: 180px;">
+                            <div class="d-flex justify-end gap-1">
+                                ${u.verification_status === 'pending' || u.verification_status === 'rejected' ? 
+                                    `<button onclick="updateStatus(${u.id}, 'verified')" class="btn btn-success" style="padding:0.35rem 0.6rem; font-size:0.75rem;">Approve</button>` 
+                                    : ''}
+                                ${u.verification_status === 'pending' || u.verification_status === 'verified' ? 
+                                    `<button onclick="updateStatus(${u.id}, 'rejected')" class="btn btn-danger" style="padding:0.35rem 0.6rem; font-size:0.75rem;">Reject</button>` 
+                                    : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showError('Error loading users. ' + error.message, 'adminError');
+            }
+        }
+
+        window.updateStatus = async (userId, status) => {
+            try {
+                await fetchAPI('/admin/verify-user', {
+                    method: 'POST',
+                    body: JSON.stringify({ userId, status }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                showSuccess(`User status successfully updated to ${status}.`, 'adminSuccess');
+                setTimeout(() => document.getElementById('adminSuccess').classList.add('hidden'), 5000);
+                loadUsers(); // Refresh table
+            } catch (error) {
+                showError('Error updating status. ' + error.message, 'adminError');
+            }
+        };
+    </script>
+</body>
+</html>

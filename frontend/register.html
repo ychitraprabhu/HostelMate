@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - HostelMate Simple</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container d-flex justify-between align-center">
+            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
+            <ul class="nav-links" id="authLinks"></ul>
+        </div>
+    </nav>
+
+    <div class="container auth-container">
+        <div class="card">
+            <h2 class="text-center mb-1">Create Account</h2>
+            <p class="text-center text-muted mb-3" style="font-size: 0.9rem;">Join as a student to post reviews</p>
+            
+            <div id="errorMsg" class="alert alert-error hidden"></div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="full_name" class="form-control" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">College Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="e.g. name@cmrit.edu.in" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_card">College ID Card (Image)</label>
+                    <input type="file" id="id_card" name="id_card" class="form-control" accept="image/*" required>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.8rem;">Upload a clear photo of your student ID for admin verification.</small>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2" style="width: 100%; padding: 0.8rem; font-size: 1rem;">Create Account</button>
+            </form>
+            <p class="text-center mt-3" style="font-size: 0.9rem;">
+                Already have an account? <a href="/login.html" style="font-weight: 600;">Login here</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

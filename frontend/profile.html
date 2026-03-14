@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - HostelMate Simple</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container d-flex justify-between align-center">
+            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
+            <ul class="nav-links" id="authLinks"></ul>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 600px; margin: 4rem auto;">
+        <div class="card">
+            <h2 class="card-title text-center mb-1">Your Profile</h2>
+            <p class="text-center text-muted mb-4">Manage your account and view verification status.</p>
+            
+            <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 1.5rem;">
+                <div class="d-flex justify-between mb-3 align-end" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    <span class="text-muted" style="font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Full Name</span>
+                    <span id="profileName" style="font-weight: 600; font-size: 1.1rem; color: var(--primary);"></span>
+                </div>
+                <div class="d-flex justify-between mb-3 align-end" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    <span class="text-muted" style="font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</span>
+                    <span id="profileEmail" style="font-weight: 500; color: var(--text-main);"></span>
+                </div>
+                <div class="d-flex justify-between mb-3 align-end" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    <span class="text-muted" style="font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Role</span>
+                    <span id="profileRole" style="font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"></span>
+                </div>
+                <div class="d-flex justify-between align-center" id="verificationRow">
+                    <span class="text-muted" style="font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Verification Status</span>
+                    <span id="profileStatus"></span>
+                </div>
+            </div>
+
+            <div id="statusMessage" class="mt-4 text-center p-3" style="background: #f0fdf4; border-radius: var(--radius); border: 1px dashed var(--success);">
+                <!-- Dynamic text based on status -->
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button onclick="logout()" class="btn btn-secondary" style="padding: 0.6rem 2rem; border-color: #ef4444; color: #ef4444;">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getAuthUser();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            document.getElementById('profileName').textContent = user.full_name;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileRole').textContent = user.role;
+            
+            if (user.role === 'admin') {
+                document.getElementById('profileRole').classList.add('badge', 'badge-admin');
+                document.getElementById('verificationRow').classList.add('hidden');
+                document.getElementById('statusMessage').innerHTML = `<a href="/admin.html" class="btn btn-primary">Go to Admin Dashboard</a>`;
+                document.getElementById('statusMessage').style.background = 'transparent';
+                document.getElementById('statusMessage').style.border = 'none';
+            } else {
+                const statusSpan = document.getElementById('profileStatus');
+                statusSpan.textContent = user.verification_status;
+                statusSpan.className = `badge badge-${user.verification_status}`;
+
+                const msgDiv = document.getElementById('statusMessage');
+                if (user.verification_status === 'verified') {
+                    msgDiv.innerHTML = `<span style="color:var(--success); font-weight:500;">You are verified and can now post reviews!</span>`;
+                } else if (user.verification_status === 'pending') {
+                    msgDiv.style.background = '#fffbeb';
+                    msgDiv.style.borderColor = '#f59e0b';
+                    msgDiv.innerHTML = `<span style="color:#b45309; font-weight:500;">Your account is under review by the admin team.</span>`;
+                } else if (user.verification_status === 'rejected') {
+                    msgDiv.style.background = '#fef2f2';
+                    msgDiv.style.borderColor = '#ef4444';
+                    msgDiv.innerHTML = `<span style="color:var(--danger); font-weight:500;">Your verification was rejected by the admin team.</span>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
