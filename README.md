@@ -61,30 +61,18 @@ HostelMate
 │   ├── db              # database connection and schema.sql
 │   ├── middleware      # authentication guards
 │   ├── routes          # API endpoint definitions
-│   └── server.js       # entry point
+│   └── server.js       
 ├── frontend
 │   ├── css             # styles
 │   ├── js              # client-side logic
 │   └── *.html          # UI pages
-├── .env                # environment variables
-└── README.md           # project documentation
+├── .env                
+└── README.md          
 ```
 
 ## Architecture
 
-The application follows a simple full-stack structure with a Node.js backend using REST APIs and HTML, CSS, JavaScript for the frontend.
-
-The database uses a relational schema with tables such as:
-
-users  
-hostels  
-room_types  
-bookings  
-payments  
-reviews  
-messages
-
-Foreign keys are used to maintain relationships between users, hostels, bookings, and payments.
+A full-stack application built using a Node.js backend with REST APIs, a HTML, CSS, and JavaScript frontend, and a relational database schema.
 
 ## Possible Improvements
 
