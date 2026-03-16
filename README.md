@@ -66,7 +66,6 @@ HostelMate
 │   ├── css             # styles
 │   ├── js              # client-side logic
 │   └── *.html          # UI pages
-├── uploads             # hostel images and assets
 ├── .env                # environment variables
 └── README.md           # project documentation
 ```
