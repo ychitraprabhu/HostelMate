@@ -1,52 +1,92 @@
 const db = require('../db/connection');
 
-// @desc    Get all users (students)
-// @route   GET /api/admin/users
-// @access  Private (Admin)
-const getUsers = async (req, res) => {
-    try {
-        const [users] = await db.query(`
-            SELECT id, email, full_name, role, verification_status, id_card_path, created_at
-            FROM users 
-            WHERE role = 'student'
-            ORDER BY created_at DESC
-        `);
-        
-        res.json(users);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error fetching users' });
-    }
+// Get all users
+const getAllUsers = async (req, res) => {
+  try {
+    // Excluding passwords for security
+    const [users] = await db.query('SELECT id, name, email, role, created_at FROM users');
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while fetching users.' });
+  }
 };
 
-// @desc    Verify a student account
-// @route   POST /api/admin/verify-user
-// @access  Private (Admin)
-const verifyUser = async (req, res) => {
-    try {
-        const { userId, status } = req.body; // status should be 'verified' or 'rejected'
+// Get all hostels (including unapproved)
+const getAllHostels = async (req, res) => {
+  try {
+    const [hostels] = await db.query('SELECT * FROM hostels');
+    res.json(hostels);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while fetching hostels.' });
+  }
+};
 
-        if (!userId || !['verified', 'rejected', 'pending'].includes(status)) {
-            return res.status(400).json({ message: 'Invalid data provided' });
-        }
-
-        const [result] = await db.query(
-            'UPDATE users SET verification_status = ? WHERE id = ? AND role = "student"',
-            [status, userId]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'User not found or is an admin' });
-        }
-
-        res.json({ message: `User status updated to ${status}` });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error updating user status' });
+// Approve a hostel
+const approveHostel = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query('UPDATE hostels SET is_approved = true WHERE id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Hostel not found.' });
     }
+
+    res.json({ message: 'Hostel approved successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while approving hostel.' });
+  }
+};
+
+// Get all reviews
+const getAllReviews = async (req, res) => {
+  try {
+    const [reviews] = await db.query(`
+      SELECT r.*, u.name as student_name, h.name as hostel_name 
+      FROM reviews r
+      JOIN users u ON r.student_id = u.id
+      JOIN hostels h ON r.hostel_id = h.id
+      ORDER BY r.created_at DESC
+    `);
+    
+    // Anonymize names if is_anonymous is true
+    const processedReviews = reviews.map(r => {
+        if (r.is_anonymous) {
+             return { ...r, student_name: 'Anonymous Student' };
+        }
+        return r;
+    });
+
+    res.json(processedReviews);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while fetching reviews.' });
+  }
+};
+
+// Delete a review
+const deleteReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query('DELETE FROM reviews WHERE id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Review not found.' });
+    }
+
+    res.json({ message: 'Review deleted successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while deleting review.' });
+  }
 };
 
 module.exports = {
-    getUsers,
-    verifyUser
+  getAllUsers,
+  getAllHostels,
+  approveHostel,
+  getAllReviews,
+  deleteReview
 };

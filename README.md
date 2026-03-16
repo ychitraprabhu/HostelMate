@@ -1,38 +1,56 @@
 # HostelMate
 
-HostelMate is a web platform designed to help students discover hostels near selected colleges. 
-The platform allows users to explore hostel listings and view ratings and reviews submitted only by verified students.
+HostelMate is a web platform that helps students discover and book hostels at a selected location. The goal of the project is to simplify the process of finding accommodation by providing verified hostel listings, transparent pricing, and a straightforward booking and payment flow.
 
-This project is a full-stack application built using Node.js, Express, MySQL, and vanilla frontend technologies (HTML/CSS/JS).
+The platform also ensures that reviews come from students who have actually stayed in that hostel, making feedback more reliable.
 
----
+Originally this project focused only on verified hostel reviews using student ID verification.
 
-## Features
+## Overview
 
-- **Discover Hostels**: Browse and filter hostels near selected colleges by price and rating.
-- **Verified Reviews**: View and post hostel ratings and reviews. Only verified students can post reviews.
-- **Anonymous Posting**: Reviews can be posted anonymously while ensuring the reviewer is verified.
-- **Student Authentication**: Secure registration and login with student ID card uploads for verification.
-- **Admin Dashboard**: Dedicated view for administrators to verify student accounts and manage users.
-
----
+HostelMate connects students and hostel owners through a simple web interface. Students can browse available hostels, view room types and prices, make bookings, and complete payments. Hostel owners can list properties and communicate with potential tenants. The system also includes role-based dashboards and an admin panel for managing listings.
 
 ## Tech Stack
 
-**Backend**
-- Node.js & Express.js
-- JWT (JSON Web Token) for authentication
-- Multer for file uploads (ID cards)
+Frontend  
+HTML5, CSS3, and JavaScript (ES6)
 
-**Database**
-- MySQL (with `mysql2` driver)
+Backend  
+Node.js with Express.js
 
-**Frontend**
-- HTML5
-- Vanilla CSS
-- Vanilla JavaScript (Fetch API)
+Database  
+MySQL relational database
 
----
+Authentication  
+JWT (JSON Web Tokens) and bcrypt for password hashing
+
+Payments  
+PayPal Sandbox integration
+
+Icons  
+Lucide Icons
+
+## Main Features
+
+- Hostel search and filtering  
+Students can browse hostels and filter listings by location, hostel type (boys or girls), and price range.
+
+- Room selection and booking  
+Each hostel provides multiple room types with different sharing options and prices.
+
+- Payment integration  
+Bookings can be completed using PayPal Sandbox for payment simulation.
+
+- Verified reviews  
+Students can leave ratings and reviews only if they have completed a booking and payment for that hostel.
+
+- Messaging system  
+Students can send messages directly to hostel owners for inquiries.
+
+- Role-based dashboards  
+Students can view bookings, payment status, and communicate with owners.  
+Owners can manage hostels and view booking requests.  
+Admins can approve or reject hostel listings, manage reviews and monitor platform activity.
 
 ## Project Structure
 
@@ -42,78 +60,75 @@ HostelMate
 │   ├── controllers     # logic for auth, admin, and hostels
 │   ├── db              # database connection and schema.sql
 │   ├── middleware      # authentication guards
-│   └── routes          # API endpoint definitions
+│   ├── routes          # API endpoint definitions
+│   └── server.js       # entry point
 ├── frontend
 │   ├── css             # styles
 │   ├── js              # client-side logic
 │   └── *.html          # UI pages
-├── uploads             # student ID images
-├── server.js           # entry point
-├── .env                
-└── README.md
+├── uploads             # hostel images and assets
+├── .env                # environment variables
+└── README.md           # project documentation
 ```
 
----
+## Architecture
 
-## How to Run the Project
+The application follows a simple full-stack structure with a Node.js backend using REST APIs and HTML, CSS, JavaScript for the frontend.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/chitraprabhu/HostelMate.git
-   ```
+The database uses a relational schema with tables such as:
 
-   ```bash   
-   cd HostelMate
-   ```
+users  
+hostels  
+room_types  
+bookings  
+payments  
+reviews  
+messages
 
-2. **Install dependencies**
-   In the root directory, run:
-   ```bash
-   npm install
-   ```
+Foreign keys are used to maintain relationships between users, hostels, bookings, and payments.
 
-3. **Database Setup**
-   - Create a MySQL database named `hostelmate`.
-   - Run the SQL script found in `backend/db/schema.sql` to initialize tables and seed sample data.
+## Possible Improvements
 
-4. **Configure Environment**
-   - Copy the `.env.example` file and rename it to `.env`.
-   - Update the values in the `.env` file with your local MySQL credentials:
+- Additional request validation using libraries such as Joi or Express Validator.  
+- Integration with mapping services such as Google Maps for property locations.  
+- More dynamic amenity management for hostel listings.  
+- Automated unit and integration tests.
 
-   ```env
-   PORT=5000
-   DB_HOST=localhost
-   DB_USER=your_username
-   DB_PASSWORD=your_password
-   DB_NAME=hostelmate
-   JWT_SECRET=your_jwt_secret
-   ```
+## Getting Started
 
-5. **Start the Application**
-   ```bash
-   npm start
-   ```
-   Or for development mode:
-   ```bash
-   npm run dev
-   ```
-   Visit **http://localhost:5000** in your browser.
+Follow these steps to set up and run the project locally:
 
----
+### 1. Database Setup
+- Install **MySQL** and create a database named `hostelmate_db`.
+- Import the schema and sample data:
+  ```bash
+  mysql -u root -p hostelmate_db < backend/db/schema.sql
+  ```
 
-## Sample Accounts
+### 2. Backend Configuration
+- Navigate to the `backend` folder and install dependencies:
+  ```bash
+  cd backend
+  npm install
+  ```
+- Copy the `.env.example` (or create a new `.env` file) and fill in your database credentials and JWT secret:
+  ```env
+  PORT=5000
+  DB_HOST=localhost
+  DB_USER=root
+  DB_PASS=yourpassword
+  DB_NAME=hostelmate_db
+  JWT_SECRET=your_jwt_secret
+  PAYPAL_CLIENT_ID=your_paypal_client_id
+  PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+  ```
 
-- **Admin**: `admin@hostelmate.com` | `admin123`
-- **Verified Student**: `student1@example.com` | `admin123`
+### 3. Running the Server
+- Start the server:
+  ```bash
+  npm start
+  # or for development with auto-reload
+  npm run dev
+  ```
+- The API will be running at `http://localhost:5000`.
 
----
-
-## Limitations & Future Improvements
-
-- **Limitations**: The project is currently in a development stage with basic UI/UX and limited college, hostel data.
-- **Future Improvements**:
-    - Implement more robust data validation.
-    - Add advanced hostel amenities and location maps.
-    - Add request hostel listing feature for users.
-    - Enhance UI with more interactive components.
-    - Add automated testing suites.

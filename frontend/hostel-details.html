@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Details | HostelMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Replace'sb' with your client-id if needed, but for sandbox it is usually this -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AcK5Qsj9rRcZZGSRqoETp0vztfqR588qaEXb9hgPnCPa3p5eaMk8deCjxl04zwbVw9gcd0RGUKrMDsCo&currency=USD"></script>
+    <style>
+        .details-container { padding: 4rem 0; }
+        .details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; }
+        
+        .image-gallery { margin-bottom: 2rem; border-radius: 12px; overflow: hidden; height: 450px; background: #eee; }
+        .image-gallery img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .hostel-info h1 { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-dark); }
+        .location-tag { color: var(--text-light); display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; }
+        
+        .amenities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0; }
+        .amenity-item { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: 500; }
+        
+        .booking-sidebar { position: sticky; top: 100px; }
+        .booking-card { padding: 2rem; }
+        
+        .pricing-section { margin: 1.5rem 0; border-top: 1px solid var(--bg-main); padding-top: 1.5rem; }
+        .room-type-btn { width: 100%; text-align: left; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
+        .room-type-btn.active { border-color: var(--primary); background: var(--primary-light); }
+        .room-name { font-weight: 600; }
+        .room-price { color: var(--primary); font-weight: 700; }
+        
+        .owner-card { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; background: var(--bg-main); border-radius: 12px; margin-top: 2rem; }
+        .owner-avatar { width: 48px; height: 48px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-light); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand"><i data-lucide="school"></i> HostelMate</a>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+
+    <div class="container details-container" id="hostelContent" style="display:none;">
+        <div class="details-grid">
+            <div class="main-info">
+                <div class="image-gallery" style="height: 480px; box-shadow: var(--shadow-md); transition: var(--transition);">
+                    <img id="hostelImg" src="" alt="Hostel" style="transition: transform 0.3s ease;">
+                </div>
+                
+                <div class="hostel-info">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                        <h1 id="hostelName" style="margin:0;">Hostel Name</h1>
+                        <span class="badge badge-success" style="display:flex; align-items:center; gap:0.25rem;">
+                            <i data-lucide="check-circle" style="width:12px"></i> Verified
+                        </span>
+                    </div>
+                    <div class="location-tag">
+                        <i data-lucide="map-pin"></i>
+                        <span id="hostelLoc">Location</span>
+                    </div>
+                    
+                    <div style="background:white; padding:2rem; border-radius:12px; border:1px solid var(--border); margin-bottom:2.5rem;">
+                        <h3 style="margin-bottom:1rem; font-size:1.2rem;">About this hostel</h3>
+                        <p id="hostelDesc" style="color:var(--text-main); font-size:1.05rem; line-height:1.7;"></p>
+                    </div>
+                    
+                    <h3 style="margin-bottom:1.5rem; font-size:1.2rem;">Amenities</h3>
+                    <div class="amenities-grid" id="amenitiesGrid">
+                        <!-- Amenities here -->
+                    </div>
+
+                    <div class="owner-card" style="border:1px solid var(--border); background: #fcfcfc;">
+                        <div class="owner-avatar" style="border:2px solid var(--primary-light);"><i data-lucide="user"></i></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:var(--text-light); text-transform:uppercase; font-weight:700; letter-spacing:0.05em;">Managed by</div>
+                            <div id="ownerName" style="font-weight:600; color:var(--text-dark); font-size:1.1rem;">Owner Name</div>
+                        </div>
+                        <a id="chatBtn" href="#" class="btn btn-primary" style="margin-left:auto; font-size:0.85rem;">
+                            <i data-lucide="message-square"></i> Chat with Owner
+                        </a>
+                    </div>
+
+                    <div id="reviewStatusContainer" style="display:none; margin-top:2rem; padding:1.5rem; background:var(--primary-light); border-radius:12px; border:1px solid var(--primary); box-shadow: var(--shadow-sm);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h4 style="margin:0; font-size:1.1rem; color:var(--primary);">Verified Stay</h4>
+                                <p style="margin:0; font-size:0.85rem; color:var(--text-main);">You have stayed here. Share your experience!</p>
+                            </div>
+                            <button onclick="openReviewModal()" class="btn btn-primary">Write Review</button>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <section style="margin-top: 5rem; border-top: 1px solid var(--border); padding-top: 4rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2.5rem;">
+                            <h2 style="font-size:1.75rem; margin:0;">Student Reviews</h2>
+                            <span id="reviewCountHeader" class="badge badge-outline" style="font-weight:500; font-size:0.85rem;">0 reviews</span>
+                        </div>
+                        <div id="reviewsList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:1.5rem;">
+                            <p style="color:var(--text-light)">No reviews yet.</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <aside class="booking-sidebar">
+                <div class="card booking-card" style="position:sticky; top:100px; border-width:2px;">
+                    <h3 class="mb-4" style="font-size:1.25rem;">Select Room Type</h3>
+                    <div id="roomTypesList">
+                        <!-- Room types injected by JS -->
+                    </div>
+                    
+                    <div class="pricing-section">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                            <span style="color:var(--text-light); font-weight:600; font-size:0.9rem;">Monthly Total</span>
+                            <span id="displayPrice" style="font-size:2rem; font-weight:800; color:var(--text-dark);">₹0</span>
+                        </div>
+                        <div id="paypal-button-container"></div>
+                        <div style="margin-top:1.5rem; border-top:1px solid var(--border); padding-top:1.5rem;">
+                            <button id="simulateBtn" class="btn btn-outline" style="width:100%; justify-content:center; color:var(--text-light); font-size:0.8rem; border-style:dashed;">
+                                <i data-lucide="zap" style="width:14px"></i> Simulate Payment
+                            </button>
+                        </div>
+                    </div>
+                    <p style="text-align:center; font-size:0.75rem; color:var(--text-light); margin-top:1.5rem; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+                        <i data-lucide="shield-check" style="width:14px"></i> Secured by PayPal
+                    </p>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="loading" style="padding:10rem; text-align:center; color:var(--text-light);">
+        <p>Loading hostel details...</p>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:1000; align-items:center; justify-content:center;">
+        <div class="card" style="width:100%; max-width:500px; padding:2.5rem; position:relative;">
+            <button onclick="closeReviewModal()" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; color:var(--text-light); cursor:pointer;"><i data-lucide="x"></i></button>
+            <h2 style="margin-bottom:1.5rem;">Write a Review</h2>
+            <form id="reviewForm" onsubmit="submitReview(event)">
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div style="display:flex; gap:0.5rem; margin-top:0.5rem;" id="ratingStars">
+                        <i data-lucide="star" class="star-rating" data-value="1" style="cursor:pointer; color:var(--border);"></i>
+                        <i data-lucide="star" class="star-rating" data-value="2" style="cursor:pointer; color:var(--border);"></i>
+                        <i data-lucide="star" class="star-rating" data-value="3" style="cursor:pointer; color:var(--border);"></i>
+                        <i data-lucide="star" class="star-rating" data-value="4" style="cursor:pointer; color:var(--border);"></i>
+                        <i data-lucide="star" class="star-rating" data-value="5" style="cursor:pointer; color:var(--border);"></i>
+                    </div>
+                    <input type="hidden" id="ratingInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Experience</label>
+                    <textarea id="reviewComment" class="form-control" rows="4" placeholder="How was your stay?" required></textarea>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:2rem; padding:0.5rem 0;">
+                    <input type="checkbox" id="isAnonymous" style="width:18px; height:18px; cursor:pointer; margin:0; accent-color:var(--primary);">
+                    <label for="isAnonymous" style="margin:0; font-size:0.95rem; font-weight:500; color:var(--text-main); cursor:pointer;">Submit review anonymously</label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">© 2025 HostelMate. A premium experience for students.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/hostel-details.js"></script>
+</body>
+</html>

@@ -3,115 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - HostelMate Simple</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Admin Panel | HostelMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 70px); }
+        .sidebar { background: white; border-right: 1px solid var(--border); padding: 2rem 1rem; }
+        .main-content { padding: 3rem; background: var(--bg-main); }
+        
+        .side-btn {
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .side-btn.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
+        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--bg-main); }
+        th { background: #fcfcfc; font-weight: 600; color: var(--text-light); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .status-pill { padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
+        .status-pill.pending { background: #fef3c7; color: #92400e; }
+        
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+    </style>
 </head>
 <body>
+
     <nav class="navbar">
-        <div class="container d-flex justify-between align-center">
-            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
-            <ul class="nav-links" id="authLinks"></ul>
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand"><i data-lucide="school"></i> HostelMate <span class="badge badge-primary" style="margin-left:0.5rem; font-size:0.6rem;">Admin</span></a>
+            <ul class="nav-links" id="nav-links"></ul>
         </div>
     </nav>
 
-    <div class="container mt-4 mb-4">
-        <h2 class="mb-3">Admin Dashboard</h2>
-        <div id="adminError" class="alert alert-error hidden"></div>
-        <div id="adminSuccess" class="alert alert-success hidden"></div>
+    <div class="admin-layout" id="adminBody" style="display:none;">
+        <aside class="sidebar">
+            <button class="side-btn active" onclick="showTab('users', event)">
+                <i data-lucide="users"></i> Users
+            </button>
+            <button class="side-btn" onclick="showTab('hostels', event)">
+                <i data-lucide="building"></i> Hostels
+            </button>
+            <button class="side-btn" onclick="showTab('reviews', event)">
+                <i data-lucide="star"></i> Reviews
+            </button>
+        </aside>
 
-        <div class="card p-0" style="padding: 0; box-shadow: var(--shadow-md);">
-            <div class="card-header pt-4 px-4 pb-3" style="border-bottom: 2px solid #f1f5f9;">
-                <h3 class="card-title text-primary">User Verifications</h3>
-                <p class="text-muted" style="font-size: 0.95rem;">Review student submissions and verify their ID cards to approve them for posting reviews.</p>
-            </div>
-            
-            <div class="table-responsive">
-                <table style="margin-top: 0; border: none; border-radius: 0;">
+        <main class="main-content">
+            <div id="users-tab" class="tab-pane active">
+                <h2 class="section-title">User Management</h2>
+                <table>
                     <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Email Address</th>
-                            <th>Registered On</th>
-                            <th>ID Card</th>
-                            <th>Status</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
+                        <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr>
                     </thead>
-                    <tbody id="usersTable">
-                        <tr><td colspan="6" class="text-center py-4 text-muted">Loading users...</td></tr>
-                    </tbody>
+                    <tbody id="usersTableBody"></tbody>
                 </table>
             </div>
-        </div>
+
+            <div id="hostels-tab" class="tab-pane">
+                <h2 class="section-title">Pending Approvals</h2>
+                <table>
+                    <thead>
+                        <tr><th>Hostel</th><th>Location</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="hostelsTableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="reviews-tab" class="tab-pane">
+                <h2 class="section-title">Moderation</h2>
+                <table>
+                    <thead>
+                        <tr><th>Student</th><th>Rating</th><th>Comment</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="reviewsTableBody"></tbody>
+                </table>
+            </div>
+        </main>
     </div>
 
-    <script src="/js/main.js"></script>
+    <script src="js/main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const user = getAuthUser();
-            if (!user || user.role !== 'admin') {
-                window.location.href = '/login.html';
-                return;
-            }
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-            await loadUsers();
-        });
-
-        async function loadUsers() {
-            try {
-                const users = await fetchAPI('/admin/users');
-                const tbody = document.getElementById('usersTable');
-                
-                if (users.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No students registered yet.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = users.map(u => `
-                    <tr>
-                        <td style="font-weight:600; color:var(--text-main);">${u.full_name}</td>
-                        <td style="color:var(--text-muted);">${u.email}</td>
-                        <td style="color:var(--text-muted); font-size:0.85rem;">${new Date(u.created_at).toLocaleDateString()}</td>
-                        <td class="text-center" style="width: 120px;">
-                            ${u.id_card_path 
-                                ? `<a href="${u.id_card_path}" target="_blank" title="Click to enlarge">
-                                     <img src="${u.id_card_path}" class="id-thumbnail" alt="ID Card">
-                                   </a>` 
-                                : '<span class="text-muted" style="font-size:0.75rem; font-style:italic;">No image uploaded</span>'}
-                        </td>
-                        <td style="width: 100px;"><span class="badge badge-${u.verification_status}">${u.verification_status}</span></td>
-                        <td class="text-right" style="width: 180px;">
-                            <div class="d-flex justify-end gap-1">
-                                ${u.verification_status === 'pending' || u.verification_status === 'rejected' ? 
-                                    `<button onclick="updateStatus(${u.id}, 'verified')" class="btn btn-success" style="padding:0.35rem 0.6rem; font-size:0.75rem;">Approve</button>` 
-                                    : ''}
-                                ${u.verification_status === 'pending' || u.verification_status === 'verified' ? 
-                                    `<button onclick="updateStatus(${u.id}, 'rejected')" class="btn btn-danger" style="padding:0.35rem 0.6rem; font-size:0.75rem;">Reject</button>` 
-                                    : ''}
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (error) {
-                showError('Error loading users. ' + error.message, 'adminError');
-            }
+        if (!token || user.role !== 'admin') {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('adminBody').style.display = 'grid';
+            loadUsers();
         }
 
-        window.updateStatus = async (userId, status) => {
-            try {
-                await fetchAPI('/admin/verify-user', {
-                    method: 'POST',
-                    body: JSON.stringify({ userId, status }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                showSuccess(`User status successfully updated to ${status}.`, 'adminSuccess');
-                setTimeout(() => document.getElementById('adminSuccess').classList.add('hidden'), 5000);
-                loadUsers(); // Refresh table
-            } catch (error) {
-                showError('Error updating status. ' + error.message, 'adminError');
+        function showTab(id, e) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id + '-tab').classList.add('active');
+            e.currentTarget.classList.add('active');
+            
+            if (id === 'users') loadUsers();
+            if (id === 'hostels') loadHostels();
+            if (id === 'reviews') loadReviews();
+        }
+
+        async function loadUsers() {
+            const res = await fetch(`${API_URL}/admin/users`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const users = await res.json();
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td style="font-weight:600">${u.name}</td>
+                    <td>${u.email}</td>
+                    <td><span class="badge ${u.role === 'admin' ? 'badge-primary' : 'badge-outline'}">${u.role}</span></td>
+                    <td style="color:var(--text-light); font-size:0.9rem;">${new Date(u.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadHostels() {
+            const res = await fetch(`${API_URL}/admin/hostels`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const hostels = await res.json();
+            const tbody = document.getElementById('hostelsTableBody');
+            const unapproved = hostels.filter(h => !h.is_approved);
+            tbody.innerHTML = unapproved.length ? unapproved.map(h => `
+                <tr>
+                    <td style="font-weight:600">${h.name}</td>
+                    <td>${h.location}</td>
+                    <td><span class="status-pill pending">Pending</span></td>
+                    <td><button onclick="approveHostel(${h.id})" class="btn btn-primary" style="padding:0.4rem 0.8rem; font-size:0.8rem;">Approve</button></td>
+                </tr>
+            `).join('') : '<tr><td colspan="4" class="text-center" style="padding:4rem; color:var(--text-light)">No pending approvals</td></tr>';
+        }
+
+        async function loadReviews() {
+            const res = await fetch(`${API_URL}/admin/reviews`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const reviews = await res.json();
+            const tbody = document.getElementById('reviewsTableBody');
+            tbody.innerHTML = reviews.map(r => `
+                <tr>
+                    <td>Student #${r.student_id}</td>
+                    <td style="color:#fbbf24; display:flex; gap:2px;">
+                        ${Array(r.rating).fill('<i data-lucide="star" style="width:14px; fill:currentColor"></i>').join('')}
+                    </td>
+                    <td style="font-size:0.9rem; color:var(--text-main);">${r.comment}</td>
+                    <td><button onclick="deleteReview(${r.id})" class="btn" style="color:var(--danger); font-size:0.8rem;">Delete</button></td>
+                </tr>
+            `).join('');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        async function approveHostel(id) {
+            await fetch(`${API_URL}/admin/hostels/${id}/approve`, { method: 'PUT', headers: { 'Authorization': `Bearer ${token}` } });
+            loadHostels();
+        }
+
+        async function deleteReview(id) {
+            if (confirm('Delete this review?')) {
+                await fetch(`${API_URL}/admin/reviews/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                loadReviews();
             }
-        };
+        }
     </script>
 </body>
 </html>

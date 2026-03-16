@@ -1,66 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HostelMate - Home</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>HostelMate | Find Your Perfect Student Home</title>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at top right, #eff6ff 0%, #ffffff 100%);
+            position: relative;
+            margin-top: -70px; /* Pull up to go behind navbar if transparent or just to fill screen */
+            padding-top: 70px;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--text-light);
+            border-radius: 12px;
+            opacity: 0.5;
+            animation: scroll-wheel 2s infinite;
+        }
+
+        @keyframes scroll-wheel {
+            0% { transform: translate(-50%, 0); opacity: 0; }
+            30% { opacity: 0.5; }
+            100% { transform: translate(-50%, 15px); opacity: 0; }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            width: 100%;
+            padding: 0 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            line-height: 1;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+            letter-spacing: -0.04em;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            max-width: 700px;
+            margin: 0 auto 3.5rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 99px;
+            display: flex;
+            gap: 0.5rem;
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .search-container:focus-within {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 60px rgba(37, 99, 235, 0.2);
+            border-color: var(--primary);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 0 2rem;
+            font-size: 1.15rem;
+            border-radius: 99px;
+        }
+
+        .search-input:focus {
+            box-shadow: none;
+        }
+
+        .search-btn {
+            padding: 1rem 2.5rem;
+            border-radius: 99px;
+            font-size: 1.1rem;
+        }
+
+        .features {
+            padding: 8rem 0;
+            background: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--primary);
+            color: white;
+        }
+    </style>
 </head>
+
 <body>
+
     <nav class="navbar">
-        <div class="container d-flex justify-between align-center">
-            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
-            <ul class="nav-links" id="authLinks">
-                <!-- Navigation populated by main.js -->
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand">
+                <i data-lucide="school"></i> HostelMate
+            </a>
+            <ul class="nav-links" id="nav-links">
+                <!-- Links injected by main.js -->
             </ul>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="container text-center">
-            <h1>Find <em>Honest Hostel Reviews</em><br>Near Your College</h1>
-            <p>HostelMate lets students read and write verified reviews of hostels and PGs near their college. A clean, simple platform.</p>
-            <div class="d-flex gap-2 justify-center mt-3">
-                <a href="/hostels.html" class="btn btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1.05rem;">Find Hostels</a>
-                <a href="/register.html" class="btn btn-secondary" style="background: transparent; color: white; border-color: rgba(255,255,255,0.3); padding: 0.8rem 1.5rem; font-size: 1.05rem;">Register Free</a>
+    <header class="hero">
+        <div class="hero-content">
+            <h1> Find your perfect student home </h1>
+            <p>Discover, compare, and book verified hostels with ease. </p>
+
+            <form action="hostels.html" method="GET" class="search-container">
+                <input type="text" name="location" placeholder="Search by area (e.g. Medchal, Kompally...)"
+                    class="search-input" required>
+                <button type="submit" class="btn btn-primary search-btn">Search Hostels</button>
+            </form>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title text-center">Why students choose us</h2>
+            <div class="features-grid">
+                <div class="feature-card card">
+                    <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+                    <h3>Verified Listings</h3>
+                    <p>Every hostel on our platform is personally verified for safety and quality.</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon"><i data-lucide="zap"></i></div>
+                    <h3>Instant Booking</h3>
+                    <p>Secure your room in minutes with our seamless digital booking process.</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon"><i data-lucide="message-square"></i></div>
+                    <h3>Direct Chat</h3>
+                    <p>Connect with hostel owners directly to clear any doubts before booking.</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon"><i data-lucide="star"></i></div>
+                    <h3>Verified Reviews</h3>
+                    <p>Only students who have booked and stayed in a hostel can leave reviews, ensuring honest feedback.
+                    </p>
+                </div>
+
+                <div class="feature-card card">
+                    <div class="feature-icon"><i data-lucide="credit-card"></i></div>
+                    <h3>Secure Payments</h3>
+                    <p>Book your hostel safely with our secure payment system.</p>
+                </div>
+
+                <div class="feature-card card">
+                    <div class="feature-icon"><i data-lucide="filter"></i></div>
+                    <h3>Smart Filters</h3>
+                    <p>Quickly find hostels that match your needs using filters for location, price, and room type.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="container mt-4 mb-4 text-center">
-        <h2 class="mb-3">Why HostelMate?</h2>
-        <div class="grid" style="text-align: left;">
-            <div class="card">
-                <div class="card-header border-0 pb-0 mb-0">
-                    <h3 class="card-title text-center text-primary mb-1">🔍 Easy Search</h3>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted text-center" style="font-size: 0.95rem;">Find the perfect hostel matching your budget and needs. Select your college and see exactly how far it is from campus.</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header border-0 pb-0 mb-0">
-                    <h3 class="card-title text-center text-primary mb-1">🛡️ Verified Reviews</h3>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted text-center" style="font-size: 0.95rem;">Every reviewer is a verified college student. Our admins manually check ID photos against registered emails to ensure authenticity.</p>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header border-0 pb-0 mb-0">
-                    <h3 class="card-title text-center text-primary mb-1">🎭 Anonymous Mode</h3>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted text-center" style="font-size: 0.95rem;">Verified students may post anonymously. This encourages honest feedback without concern about repercussions from wardens or staff.</p>
-                </div>
-            </div>
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">© 2026 HostelMate. Made for students, by students</p>
         </div>
-    </section>
-
-    <footer style="background: var(--white); padding: 2rem 0; border-top: 1px solid var(--border); text-align: center;">
-        <p class="text-muted">&copy; 2025 HostelMate. A student-built platform for discovering hostels near colleges.</p>
     </footer>
 
-    <script src="/js/main.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Init icons
+        lucide.createIcons();
+    </script>
 </body>
+
 </html>

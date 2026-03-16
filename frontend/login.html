@@ -3,62 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - HostelMate Simple</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Login | HostelMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: white; }
+        .auth-wrapper {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+        }
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header h1 { font-size: 1.75rem; color: var(--text-dark); margin-bottom: 0.5rem; }
+    </style>
 </head>
 <body>
+
     <nav class="navbar">
-        <div class="container">
-            <a href="/index.html" class="brand">Hostel<span>Mate</span></a>
-            <ul class="nav-links" id="authLinks"></ul>
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand"><i data-lucide="school"></i> HostelMate</a>
+            <ul class="nav-links" id="nav-links"></ul>
         </div>
     </nav>
 
-    <div class="container auth-container">
-        <div class="card">
-            <h2 class="text-center">Welcome Back</h2>
-            <div id="errorMsg" class="alert alert-error hidden"></div>
-            
+    <div class="auth-wrapper">
+        <div class="card auth-card">
+            <div class="auth-header">
+                <h1>Welcome back</h1>
+                <p style="color:var(--text-light)">Login to manage your bookings</p>
+            </div>
+
+            <div id="loginError" style="display:none; padding:0.75rem; background:#fee2e2; color:#b91c1c; border-radius:8px; margin-bottom:1.5rem; font-size:0.9rem; text-align:center;"></div>
+
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" class="form-control" required>
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" placeholder="name@example.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="form-control" required>
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%">Login</button>
+                <button type="submit" id="loginBtn" class="btn btn-primary" style="width:100%; justify-content:center; padding:0.8rem; margin-top:1rem;">
+                    Sign In
+                </button>
             </form>
-            <p class="text-center mt-2" style="font-size: 0.9rem;">
-                Don't have an account? <a href="/register.html">Register here</a>
+
+            <p class="text-center mt-4" style="color:var(--text-light); font-size:0.9rem;">
+                Don't have an account? <a href="register.html" style="color:var(--primary); font-weight:600;">Create one</a>
             </p>
         </div>
     </div>
 
-    <script src="/js/main.js"></script>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            try {
-                const data = await fetchAPI('/auth/login', {
-                    method: 'POST',
-                    body: JSON.stringify({ email, password })
-                });
-
-                setAuthData(data);
-                if (data.role === 'admin') {
-                    window.location.href = '/admin.html';
-                } else {
-                    window.location.href = '/hostels.html';
-                }
-            } catch (error) {
-                showError(error.message);
-            }
-        });
-    </script>
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

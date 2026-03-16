@@ -2,87 +2,113 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db/connection');
 
-const generateToken = (id, role, status) => {
-    return jwt.sign(
-        { id, role, verification_status: status },
-        process.env.JWT_SECRET,
-        { expiresIn: '30d' }
-    );
-};
-
-// Register user
+// --------------------
+// Register Controller
+// --------------------
 const register = async (req, res) => {
-    try {
-        const { email, password, full_name } = req.body;
+  try {
+    const name = req.body.name.trim();
+    const email = req.body.email.trim().toLowerCase();
+    const password = req.body.password;
+    const role = req.body.role;
 
-        if (!email || !password || !full_name) {
-            return res.status(400).json({ message: 'Please include all fields' });
-        }
 
-        const [existingUsers] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        
-        if (existingUsers.length > 0) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        let id_card_path = null;
-        if (req.file) {
-            id_card_path = '/uploads/' + req.file.filename;
-        }
-
-        const [result] = await db.query(
-            'INSERT INTO users (email, password_hash, full_name, role, verification_status, id_card_path) VALUES (?, ?, ?, ?, ?, ?)',
-            [email, hashedPassword, full_name, 'student', 'pending', id_card_path]
-        );
-
-        if (result.insertId) {
-            res.status(201).json({
-                _id: result.insertId,
-                full_name,
-                email,
-                role: 'student',
-                verification_status: 'pending',
-                token: generateToken(result.insertId, 'student', 'pending')
-            });
-        } else {
-            res.status(400).json({ message: 'Invalid user data' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ error: 'All fields are required.' });
     }
+
+    if (!['student', 'owner'].includes(role)) {
+      return res.status(400).json({ error: 'Role must be student or owner.' });
+    }
+
+    // Check existing email
+    const [existingUsers] = await db.query(
+      'SELECT id FROM users WHERE LOWER(email) = ?',
+      [email]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ error: 'Email already exists.' });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Insert user
+    const [result] = await db.query(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      [name, email, passwordHash, role]
+    );
+
+    // Create JWT
+    const token = jwt.sign(
+      { id: result.insertId, name, role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({
+      message: 'Account created successfully!',
+      token,
+      user: { id: result.insertId, name, email, role }
+    });
+
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+    res.status(500).json({ error: 'Error during registration.' });
+  }
 };
 
-// Login user
+// --------------------
+// Login Controller
+// --------------------
 const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
 
-        const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-        const user = users[0];
+    const email = req.body.email.trim().toLowerCase();
+    const password = req.body.password;
 
-        if (user && (await bcrypt.compare(password, user.password_hash))) {
-            res.json({
-                _id: user.id,
-                full_name: user.full_name,
-                email: user.email,
-                role: user.role,
-                verification_status: user.verification_status,
-                token: generateToken(user.id, user.role, user.verification_status)
-            });
-        } else {
-            res.status(401).json({ message: 'Invalid email or password' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
     }
+
+    const [users] = await db.query(
+      'SELECT * FROM users WHERE LOWER(email) = ?',
+      [email]
+    );
+
+    if (users.length === 0) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    const user = users[0];
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: user.id, name: user.name, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      message: 'Login successful!',
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role }
+    });
+
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    res.status(500).json({ error: 'Error during login.' });
+  }
 };
 
-module.exports = {
-    register,
-    login
-};
+module.exports = { register, login };

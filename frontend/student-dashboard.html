@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | HostelMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-container { padding: 4rem 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card { padding: 2rem; border-left: 4px solid var(--primary); }
+        .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--text-dark); margin-top: 0.5rem; }
+        .stat-label { color: var(--text-light); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .profile-section { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; align-items: start; }
+        .profile-card { padding: 2.5rem; text-align: center; }
+        .avatar-circle { width: 90px; height: 90px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+        
+        .booking-details { padding: 2rem; position: relative; }
+        .info-row { display: flex; justify-content: space-between; padding: 1.25rem 0; border-bottom: 1px solid var(--bg-main); }
+        .info-label { font-weight: 600; color: var(--text-light); font-size: 0.9rem; }
+        .info-val { color: var(--text-dark); font-weight: 500; }
+        
+        .empty-state { text-align: center; padding: 4rem 2rem; background: white; border-radius: var(--radius); border: 2px dashed var(--border); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand"><i data-lucide="school"></i> HostelMate</a>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+
+    <div class="container dashboard-container" id="dashboardContent" style="display:none;">
+        <header style="margin-bottom: 3rem;">
+            <h1 style="font-size:2.2rem; color:var(--text-dark);">Welcome back, <span id="userName" style="color:var(--primary)">Student</span>!</h1>
+            <p style="color:var(--text-light)">Manage your stay and keep track of your payments.</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="card stat-card">
+                <div class="stat-label">Stay Status</div>
+                <div class="stat-val" id="bookingStatus">Searching...</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-label">Next Payment Due</div>
+                <div class="stat-val" id="nextPayment">--</div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="card profile-card">
+                <div class="avatar-circle"><i data-lucide="user" style="width:40px; height:40px;"></i></div>
+                <h2 id="profileName" style="margin-bottom:0.25rem;">Name</h2>
+                <p id="profileEmail" style="color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem;">email@example.com</p>
+                <div class="badge badge-primary">Verified Student</div>
+                <div style="margin-top:2rem; padding-top:2rem; border-top:1px solid var(--border);">
+                    <p style="font-size:0.8rem; color:var(--text-light); margin-bottom:1rem;">Member since 2026</p>
+                    <button class="btn btn-outline" style="width:100%; justify-content:center;">Edit Profile</button>
+                </div>
+            </div>
+
+            <div id="bookingContent">
+                <!-- Loaded via JS -->
+                 <div class="card booking-details">
+                    <h3 class="mb-4">Live Stay Details</h3>
+                    <div id="bookingDetailsList">
+                        <!-- details rows -->
+                        <div class="empty-state">
+                            <i data-lucide="home" style="width:48px; height:48px; color:var(--border); margin-bottom:1rem;"></i>
+                            <p style="color:var(--text-light)">You are not currently staying in any hostel.</p>
+                            <a href="hostels.html" class="btn btn-primary mt-4">Find your new home</a>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (!token || user.role !== 'student') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('userName').textContent = user.name.split(' ')[0];
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('dashboardContent').style.display = 'block';
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            
+            fetchDashboardInfo();
+        });
+
+        async function fetchDashboardInfo() {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_URL}/bookings/my`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const activeBooking = (data.bookings || []).find(b => b.status === 'confirmed');
+
+                const statusEl = document.getElementById('bookingStatus');
+                const detailsContainer = document.getElementById('bookingDetailsList');
+
+                if (activeBooking) {
+                    statusEl.textContent = "Staying";
+                    statusEl.style.color = "var(--success)";
+                    
+                    // Fetch next payment if exists
+                    const payRes = await fetch(`${API_URL}/bookings/payments/my`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const payments = await payRes.json();
+                    const lastPay = payments[0];
+                    if (lastPay) {
+                        document.getElementById('nextPayment').textContent = new Date(lastPay.next_due_date).toLocaleDateString();
+                    }
+
+                    detailsContainer.innerHTML = `
+                        <div class="info-row">
+                            <span class="info-label">Hostel</span>
+                            <span class="info-val">${activeBooking.hostel_name}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Room Type</span>
+                            <span class="info-val">${activeBooking.type_name}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Monthly Rent</span>
+                            <span class="info-val">₹${activeBooking.price_per_month.toLocaleString()}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Joined On</span>
+                            <span class="info-val">${new Date(activeBooking.start_date).toLocaleDateString()}</span>
+                        </div>
+                        <div style="margin-top:2rem; display:flex; gap:1rem;">
+                            <a href="chat.html?hostel_id=${activeBooking.hostel_id}&owner_id=${activeBooking.owner_id}" class="btn btn-primary" style="flex:1; justify-content:center;">
+                                <i data-lucide="message-square"></i> Contact Owner
+                            </a>
+                            <button class="btn btn-outline" style="flex:1; justify-content:center;">Raise Issue</button>
+                        </div>
+                    `;
+                } else {
+                    statusEl.textContent = "Looking";
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error('Dash error:', e);
+            }
+        }
+    </script>
+</body>
+</html>

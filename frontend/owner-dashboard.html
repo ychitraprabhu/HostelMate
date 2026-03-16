@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard | HostelMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-container { padding: 4rem 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card { padding: 2rem; border-left: 4px solid var(--primary); }
+        .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--text-dark); margin-top: 0.5rem; }
+        .stat-label { color: var(--text-light); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .owner-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+        
+        .property-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; }
+        .property-card { position: relative; border: none; box-shadow: var(--shadow-md); }
+        .status-badge { position: absolute; top: 1.5rem; right: 1.5rem; z-index: 10; }
+        .property-img { width: 100%; height: 200px; object-fit: cover; }
+        
+        .add-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+        .add-card { background: white; padding: 2.5rem; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: var(--shadow-lg); transition: none; }
+        .add-card:hover { transform: none; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand"><i data-lucide="school"></i> HostelMate</a>
+            <ul class="nav-links" id="nav-links"></ul>
+        </div>
+    </nav>
+
+    <div class="container dashboard-container" id="ownerBody" style="display:none;">
+        <div class="owner-header">
+            <div>
+                <h1 style="font-size:2.2rem; color:var(--text-dark);">Property Manager</h1>
+                <p style="color:var(--text-light)">Manage your listings and students efficiently.</p>
+            </div>
+            <button class="btn btn-primary" onclick="showModal()" style="height:fit-content; padding: 0.8rem 1.5rem;">
+                <i data-lucide="plus"></i> List New Hostel
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="card stat-card">
+                <div class="stat-label">Total Listings</div>
+                <div class="stat-val" id="statTotal">0</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-label">Active Bookings</div>
+                <div class="stat-val">24</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-label">Current Revenue</div>
+                <div class="stat-val" style="color:var(--success)">₹1.4L</div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-label">Total Capacity</div>
+                <div class="stat-val" id="statCap">0</div>
+            </div>
+        </div>
+
+        <section style="margin-top:4rem;">
+            <h2 class="section-title" style="font-size:1.5rem; margin-bottom:1.5rem;">My Properties</h2>
+            <div id="hostelsContainer" class="property-grid">
+                <!-- Properties injected by JS -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for adding new hostel -->
+    <div id="addModal" class="add-modal">
+        <div class="card add-card">
+            <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h2 style="margin:0;">Add New Property</h2>
+                <button onclick="hideModal()" style="color:var(--text-light)"><i data-lucide="x"></i></button>
+            </header>
+            <form id="listingForm">
+                <div class="form-group">
+                    <label class="form-label">Hostel Name</label>
+                    <input type="text" id="name" placeholder="E.g. Shanti Sadan PG" required>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <select id="location" required>
+                            <option value="Medchal">Medchal</option>
+                            <option value="Kandlakoya">Kandlakoya</option>
+                            <option value="Kompally">Kompally</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select id="type" required>
+                            <option value="Boys">Boys Only</option>
+                            <option value="Girls">Girls Only</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Property Description</label>
+                    <textarea id="description" rows="3" placeholder="Tell students about the rooms, food, and security..." required></textarea>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Total Rooms</label>
+                        <input type="number" id="total_rooms" min="1" value="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Available Now</label>
+                        <input type="number" id="available_rooms" min="0" value="20" required>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:2rem;">
+                    <button type="button" class="btn btn-outline" onclick="hideModal()">Discard</button>
+                    <button type="submit" class="btn btn-primary" style="padding:0.8rem 2rem;">Confirm Listing</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token || user.role !== 'owner') {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('ownerBody').style.display = 'block';
+            loadMyHostels();
+        }
+
+        async function loadMyHostels() {
+            try {
+                const res = await fetch(`${API_URL}/hostels/owner/my-hostels`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const list = data.hostels || data;
+                
+                document.getElementById('statTotal').textContent = list.length;
+                let totalCap = 0;
+                
+                const container = document.getElementById('hostelsContainer');
+                if (list.length === 0) {
+                    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:5rem; color:var(--text-light)">No properties listed yet.</div>';
+                    return;
+                }
+
+                container.innerHTML = list.map(h => {
+                    totalCap += h.total_rooms;
+                    const img = h.image_url ? `http://localhost:5000${h.image_url}` : 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80';
+                    return `
+                        <div class="card property-card">
+                            <img src="${img}" class="property-img">
+                            <span class="badge ${h.is_approved ? 'badge-success' : 'badge-primary'} status-badge">
+                                ${h.is_approved ? 'Approved' : 'Pending Verification'}
+                            </span>
+                            <div style="padding:1.5rem;">
+                                <h3 style="margin-bottom:0.5rem; color:var(--text-dark)">${h.name}</h3>
+                                <p style="color:var(--text-light); font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; margin-bottom:1.5rem;">
+                                    <i data-lucide="map-pin" style="width:14px"></i> ${h.location}
+                                </p>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; background:var(--bg-main); padding:1rem; border-radius:8px;">
+                                    <div style="text-align:center">
+                                        <div style="font-size:0.7rem; color:var(--text-light); font-weight:700">TOTAL</div>
+                                        <div style="font-weight:700">${h.total_rooms}</div>
+                                    </div>
+                                    <div style="text-align:center; border-left:1px solid var(--border)">
+                                        <div style="font-size:0.7rem; color:var(--text-light); font-weight:700">VACANT</div>
+                                        <div style="font-weight:700; color:var(--primary)">${h.available_rooms}</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:1rem;">
+                                     <a href="hostel-details.html?id=${h.id}" class="btn btn-outline" style="flex:1; justify-content:center; font-size:0.85rem;">View Public</a>
+                                     <a href="chat.html?hostel_id=${h.id}" class="btn btn-primary" style="flex:1; justify-content:center; font-size:0.85rem;">
+                                        <i data-lucide="message-square" style="width:14px"></i> Inquiries
+                                     </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('statCap').textContent = totalCap;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error('Owner Dash Error:', e);
+            }
+        }
+
+        function showModal() { document.getElementById('addModal').style.display = 'flex'; }
+        function hideModal() { document.getElementById('addModal').style.display = 'none'; }
+
+        document.getElementById('listingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const body = {
+                name: document.getElementById('name').value,
+                location: document.getElementById('location').value,
+                type: document.getElementById('type').value,
+                description: document.getElementById('description').value,
+                total_rooms: parseInt(document.getElementById('total_rooms').value),
+                available_rooms: parseInt(document.getElementById('available_rooms').value),
+                amenities: JSON.stringify(["WiFi", "Security", "Water", "Food"])
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/hostels`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(body)
+                });
+
+                if (res.ok) {
+                    hideModal();
+                    loadMyHostels();
+                    e.target.reset();
+                } else {
+                    alert('Failed to list property. Check if server is running.');
+                }
+            } catch (err) {
+                alert('Connection error.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Confirm Listing';
+            }
+        });
+    </script>
+</body>
+</html>
