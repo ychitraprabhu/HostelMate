@@ -86,8 +86,10 @@ Follow these steps to set up and run the project locally:
 
 ### 1. Database Setup
 
+
 - Install **MySQL** and create a database named `hostelmate_db`.
 - Import the schema and sample data:
+
 
   ```bash
   mysql -u root -p hostelmate_db < backend/db/schema.sql
@@ -96,12 +98,15 @@ Follow these steps to set up and run the project locally:
 ### 2. Backend Configuration
 - Navigate to the `backend` folder and install dependencies:
 
+
   ```bash
   cd backend
   npm install
   ```
   
+  
 - Copy the `.env.example` (or create a new `.env` file) and fill in your database credentials and JWT secret:
+
 
   ```env
   PORT=5000
@@ -117,10 +122,12 @@ Follow these steps to set up and run the project locally:
 ### 3. Running the Server
 - Start the server:
 
+
   ```bash
   npm start
   # or for development with auto-reload
   npm run dev
   ```
+  
   
 - The API will be running at `http://localhost:5000`.
