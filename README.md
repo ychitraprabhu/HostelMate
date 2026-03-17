@@ -61,57 +61,48 @@ HostelMate
 │   ├── db              # database connection and schema.sql
 │   ├── middleware      # authentication guards
 │   ├── routes          # API endpoint definitions
-│   └── server.js       # entry point
+│   └── server.js       
 ├── frontend
 │   ├── css             # styles
 │   ├── js              # client-side logic
 │   └── *.html          # UI pages
-├── uploads             # hostel images and assets
-├── .env                # environment variables
-└── README.md           # project documentation
+├── uploads             
+├── .env                
+└── README.md          
 ```
 
 ## Architecture
 
-The application follows a simple full-stack structure with a Node.js backend using REST APIs and HTML, CSS, JavaScript for the frontend.
-
-The database uses a relational schema with tables such as:
-
-users  
-hostels  
-room_types  
-bookings  
-payments  
-reviews  
-messages
-
-Foreign keys are used to maintain relationships between users, hostels, bookings, and payments.
+A full-stack application built using a Node.js backend with REST APIs, a HTML, CSS, and JavaScript frontend, and a relational database schema.
 
 ## Possible Improvements
 
 - Additional request validation using libraries such as Joi or Express Validator.  
 - Integration with mapping services such as Google Maps for property locations.  
-- More dynamic amenity management for hostel listings.  
-- Automated unit and integration tests.
 
 ## Getting Started
 
 Follow these steps to set up and run the project locally:
 
 ### 1. Database Setup
+
 - Install **MySQL** and create a database named `hostelmate_db`.
 - Import the schema and sample data:
+
   ```bash
   mysql -u root -p hostelmate_db < backend/db/schema.sql
   ```
 
 ### 2. Backend Configuration
 - Navigate to the `backend` folder and install dependencies:
+
   ```bash
   cd backend
   npm install
   ```
+  
 - Copy the `.env.example` (or create a new `.env` file) and fill in your database credentials and JWT secret:
+
   ```env
   PORT=5000
   DB_HOST=localhost
@@ -125,10 +116,11 @@ Follow these steps to set up and run the project locally:
 
 ### 3. Running the Server
 - Start the server:
+
   ```bash
   npm start
   # or for development with auto-reload
   npm run dev
   ```
+  
 - The API will be running at `http://localhost:5000`.
-
