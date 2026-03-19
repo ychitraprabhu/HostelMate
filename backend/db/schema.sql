@@ -105,30 +105,26 @@ CREATE TABLE IF NOT EXISTS messages (
 -- Owner: owner123 ($2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq)
 -- Student: student123 ($2b$10$SHEaIO6YnaFPq6q43HXegulRBE.oKDihtUCi7xtInWD6RjtByDqG6)
 INSERT INTO users (name, email, password, role) VALUES 
-('Raghavendra Rao', 'admin@hostelmate.com', '$2b$10$sOfeicOIf5eCeKECV6s6IO9mwbVmQrsuEAUgD1veTCEl2vmrY9URS', 'admin'),
-('Srinivas Reddy', 'owner1@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
-('Lakshmi Narayanan', 'owner2@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
-('Ananya Iyer', 'owner3@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
-('Kavya Nair', 'owner4@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
+('System Admin', 'admin@hostelmate.com', '$2b$10$sOfeicOIf5eCeKECV6s6IO9mwbVmQrsuEAUgD1veTCEl2vmrY9URS', 'admin'),
+('Raghavendra Rao', 'owner1@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
+('Srinivas Reddy', 'owner2@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
+('Lakshmi Narayanan', 'owner3@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
+('Ananya Iyer', 'owner4@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
+('Kavya Nair', 'owner5@hostelmate.com', '$2b$10$D3Pf4BndfI8hv6IIC0zB2eEiuBRwN7H7MPs9Jnp8d39h11inLKuhq', 'owner'),
 ('Rajat Sharma', 'student1@gmail.com', '$2b$10$SHEaIO6YnaFPq6q43HXegulRBE.oKDihtUCi7xtInWD6RjtByDqG6', 'student'),
 ('Aman Verma', 'student2@gmail.com', '$2b$10$SHEaIO6YnaFPq6q43HXegulRBE.oKDihtUCi7xtInWD6RjtByDqG6', 'student'),
 ('Priya Kapoor', 'student3@gmail.com', '$2b$10$SHEaIO6YnaFPq6q43HXegulRBE.oKDihtUCi7xtInWD6RjtByDqG6', 'student');
 
 -- Hostels Data
--- Medchal
-INSERT INTO hostels (owner_id, name, location, description, type, amenities, total_rooms, available_rooms, is_approved, avg_rating) VALUES
-(2, 'Lotus Girls Hostel', 'Medchal', 'A premium girls hostel with all essential amenities.', 'Girls', '["WiFi", "Food Included", "CCTV Security", "24/7 Water", "Power Backup"]', 50, 20, true, 4.5),
-(3, 'Green Nest PG', 'Medchal', 'Safe and secure ladies hostel featuring AC rooms.', 'Girls', '["WiFi", "Laundry", "AC Rooms", "Study Area", "Parking"]', 40, 15, true, 4.2),
-(4, 'Sunrise Boys Hostel', 'Medchal', 'A spacious boys hostel with affordable rooms.', 'Boys', '["WiFi", "Food Included", "CCTV Security", "Power Backup", "Parking"]', 60, 30, true, 4.0),
-(5, 'Sri Sai Residency', 'Medchal', 'Comfortable student living with excellent transport links.', 'Boys', '["WiFi", "Laundry", "AC Rooms", "CCTV Security", "Study Area"]', 55, 25, true, 4.2),
-
--- Kandlakoya
-(2, 'Shanti Student Homes', 'Kandlakoya', 'Peaceful and well-maintained girls accommodation.', 'Girls', '["WiFi", "Food Included", "24/7 Water", "CCTV Security"]', 40, 10, true, 4.3),
-(3, 'Gokul Residency', 'Kandlakoya', 'Close to college campus with focus on study environment.', 'Boys', '["WiFi", "AC Rooms", "Study Area", "Laundry", "Power Backup"]', 45, 12, true, 4.1),
-
--- Kompally
-(4, 'Annapurna Paying Guest', 'Kompally', 'Modern living spaces for girls with luxury facilities.', 'Girls', '["WiFi", "Food Included", "AC Rooms", "Laundry", "CCTV Security"]', 35, 18, true, 4.7),
-(5, 'Maple Student Stay', 'Kompally', 'Secured and well furnished rooms for college students.', 'Boys', '["WiFi", "Parking", "Power Backup", "CCTV Security", "24/7 Water"]', 50, 20, true, 3.9);
+INSERT INTO hostels (owner_id, name, location, description, type, amenities, total_rooms, available_rooms, image_url, is_approved, avg_rating) VALUES
+(2, 'Lotus Girls Hostel', 'Medchal', 'A premium girls hostel with all essential amenities.', 'Girls', '["WiFi", "Food Included", "CCTV Security", "24/7 Water", "Power Backup"]', 50, 20, 'https://img.cofynd.com/images/latest_images_2024/eaf3bc01276928dd780d0f46c29c5db6730779d1.webp', true, 4.5),
+(3, 'Green Nest PG', 'Medchal', 'Safe and secure ladies hostel featuring AC rooms.', 'Girls', '["WiFi", "Laundry", "AC Rooms", "Study Area", "Parking"]', 40, 15, 'https://content.jdmagicbox.com/v2/comp/hyderabad/z3/040pxx40.xx40.181220235454.k3z3/catalogue/sai-satwika-womems-pg-accommodation-gachibowli-hyderabad-paying-guest-accommodations-p2a9k4lwp7.jpg', true, 4.2),
+(4, 'Sunrise Boys Hostel', 'Medchal', 'A spacious boys hostel with affordable rooms.', 'Boys', '["WiFi", "Food Included", "CCTV Security", "Power Backup", "Parking"]', 60, 30, 'https://content.jdmagicbox.com/v2/comp/rangareddy/b5/040pxx40.xx40.250813131417.n2b5/catalogue/pullareddy-boy-s-hostel-tukkuguda-rangareddy-hostels-for-men-2qnmc7hb8y.jpg', true, 4.0),
+(5, 'Sri Sai Residency', 'Medchal', 'Comfortable student living with excellent transport links.', 'Boys', '["WiFi", "Laundry", "AC Rooms", "CCTV Security", "Study Area"]', 55, 25, 'https://content.jdmagicbox.com/v2/comp/hyderabad/v6/040pxx40.xx40.191217124657.m4v6/catalogue/lakshmi-pranathi-ladies-hostel-dilsukh-nagar-hyderabad-hostels-o9c0wf7y5x-250.jpg', true, 4.2),
+(2, 'Shanti Student Homes', 'Kandlakoya', 'Peaceful and well-maintained girls accommodation.', 'Girls', '["WiFi", "Food Included", "24/7 Water", "CCTV Security"]', 40, 10, 'https://img.cofynd.com/images/original/7b5d48416069cf5e99bba291822467a86febdb43.jpg', true, 4.3),
+(3, 'Gokul Residency', 'Kandlakoya', 'Close to college campus with focus on study environment.', 'Boys', '["WiFi", "AC Rooms", "Study Area", "Laundry", "Power Backup"]', 45, 12, 'https://asset-cdn.stanzaliving.com/stanza-living/image/upload/f_auto,q_auto,w_600/e_improve/e_sharpen:10/e_saturation:10/f_auto,q_auto/v1661498913/Website/CMS-Uploads/gbxucdcgfafkqu0moeny.jpg', true, 4.1),
+(4, 'Annapurna Paying Guest', 'Kompally', 'Modern living spaces for girls with luxury facilities.', 'Girls', '["WiFi", "Food Included", "AC Rooms", "Laundry", "CCTV Security"]', 35, 18, 'https://img.staticmb.com/mbphoto/pg/grd1/cropped_images/2020/Feb/07/Photo_h400_w540/GR1-5582-129141_400_540.jpg', true, 4.7),
+(5, 'Maple Student Stay', 'Kompally', 'Secured and well furnished rooms for college students.', 'Boys', '["WiFi", "Parking", "Power Backup", "CCTV Security", "24/7 Water"]', 50, 20, 'https://imagecdn.99acres.com/media1/29561/13/591233553M-1755706856735.jpg', true, 3.9);
 
 -- Room Types Data
 INSERT INTO room_types (hostel_id, type_name, sharing, price_per_month, available_count) VALUES
@@ -151,29 +147,29 @@ INSERT INTO room_types (hostel_id, type_name, sharing, price_per_month, availabl
 
 -- Reviews Data
 INSERT INTO reviews (student_id, hostel_id, rating, comment, is_anonymous, is_verified) VALUES
-(7, 3, 4, 'Food is decent, worth the price.', true, true),
-(8, 3, 3, 'Sometimes water issue, mostly good.', false, true),
-(6, 4, 5, 'Best hostel in Medchal area. AC rooms are large.', true, true),
-(7, 4, 4, 'Good laundry service. WiFi is fast enough.', false, true),
-(8, 4, 5, 'Security is tight, feeling very safe.', true, true),
-(6, 5, 4, 'Peaceful and close to Kandlakoya.', false, true),
-(7, 5, 4, 'Food is home-like. Enjoying my stay.', true, true),
-(8, 5, 5, 'Everything is perfect. Worth the rent.', false, true),
-(6, 6, 3, 'Laundry takes time, rest is fine.', true, true),
-(7, 6, 4, 'Ac rooms are nice. Study area is decent.', false, true),
-(8, 6, 5, 'Good facilities overall.', false, true),
-(6, 7, 5, 'Excellent stay! Highly luxury facilities.', true, true),
-(7, 7, 4, 'A bit pricey but very good maintenance.', false, true),
-(8, 7, 5, 'Food is great here.', false, true),
-(6, 8, 4, 'Parking is huge. Rooms are good.', false, true),
-(7, 8, 3, 'Water is there but power backup takes time sometimes.', true, true),
-(8, 8, 4, 'Nice rooms and good place overall.', false, true);
+(8, 3, 4, 'Food is decent, worth the price.', true, true),
+(9, 3, 3, 'Sometimes water issue, mostly good.', false, true),
+(7, 4, 5, 'Best hostel in Medchal area. AC rooms are large.', true, true),
+(8, 4, 4, 'Good laundry service. WiFi is fast enough.', false, true),
+(9, 4, 5, 'Security is tight, feeling very safe.', true, true),
+(7, 5, 4, 'Peaceful and close to Kandlakoya.', false, true),
+(8, 5, 4, 'Food is home-like. Enjoying my stay.', true, true),
+(9, 5, 5, 'Everything is perfect. Worth the rent.', false, true),
+(7, 6, 3, 'Laundry takes time, rest is fine.', true, true),
+(8, 6, 4, 'Ac rooms are nice. Study area is decent.', false, true),
+(9, 6, 5, 'Good facilities overall.', false, true),
+(7, 7, 5, 'Excellent stay! Highly luxury facilities.', true, true),
+(8, 7, 4, 'A bit pricey but very good maintenance.', false, true),
+(9, 7, 5, 'Food is great here.', false, true),
+(7, 8, 4, 'Parking is huge. Rooms are good.', false, true),
+(8, 8, 3, 'Water is there but power backup takes time sometimes.', true, true),
+(9, 8, 4, 'Nice rooms and good place overall.', false, true);
 
 -- Messages Data
 INSERT INTO messages (sender_id, receiver_id, hostel_id, message) VALUES
-(6, 2, 1, 'Hi, I would like to book a 2 sharing room. Is it available?'),
-(2, 6, 1, 'Hello Student One, yes it is available. You can proceed with booking.'),
-(7, 3, 2, 'Do you have AC rooms vacant right now?'),
-(3, 7, 2, 'Yes, we have 4 AC rooms in 2 sharing vacant.'),
-(8, 4, 3, 'Is food included in the 4200 rent?'),
-(4, 8, 3, 'Yes, standard food is included.');
+(7, 2, 1, 'Hi, I would like to book a 2 sharing room. Is it available?'),
+(2, 7, 1, 'Hello Student One, yes it is available. You can proceed with booking.'),
+(8, 3, 2, 'Do you have AC rooms vacant right now?'),
+(3, 8, 2, 'Yes, we have 4 AC rooms in 2 sharing vacant.'),
+(9, 4, 3, 'Is food included in the 4200 rent?'),
+(4, 9, 3, 'Yes, standard food is included.');

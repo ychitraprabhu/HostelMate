@@ -23,6 +23,7 @@ router.get('/:hostel_id/rooms', hostelController.getRoomsByHostelId);
 
 // Owner only routes
 router.get('/owner/my-hostels', verifyToken, requireRole('owner'), hostelController.getMyHostels);
+router.get('/owner/stats', verifyToken, requireRole('owner'), hostelController.getOwnerStats);
 router.post('/', verifyToken, requireRole('owner'), upload.single('image'), hostelController.createHostel);
 router.put('/:id', verifyToken, requireRole('owner'), upload.single('image'), hostelController.updateHostel);
 

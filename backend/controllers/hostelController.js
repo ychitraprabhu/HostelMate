@@ -159,6 +159,37 @@ const getMyHostels = async (req, res) => {
   }
 };
 
+// Get stats for logged-in owner
+const getOwnerStats = async (req, res) => {
+  try {
+    const owner_id = req.user.id;
+
+    // 1. Total confirmed bookings across all owner's hostels
+    const [bookingStats] = await db.query(`
+      SELECT COUNT(b.id) as activeBookings 
+      FROM bookings b
+      JOIN hostels h ON b.hostel_id = h.id
+      WHERE h.owner_id = ? AND b.status = 'confirmed'
+    `, [owner_id]);
+
+    // 2. Total revenue from completed payments across all owner's hostels
+    const [revenueStats] = await db.query(`
+      SELECT SUM(p.amount) as totalRevenue 
+      FROM payments p
+      JOIN hostels h ON p.hostel_id = h.id
+      WHERE h.owner_id = ? AND p.status = 'completed'
+    `, [owner_id]);
+
+    res.json({
+      activeBookings: bookingStats[0].activeBookings || 0,
+      totalRevenue: revenueStats[0].totalRevenue || 0
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while fetching owner stats.' });
+  }
+};
+
 // Get all room types for a specific hostel
 const getRoomsByHostelId = async (req, res) => {
   try {
@@ -177,5 +208,6 @@ module.exports = {
   createHostel,
   updateHostel,
   getMyHostels,
+  getOwnerStats,
   getRoomsByHostelId
 };

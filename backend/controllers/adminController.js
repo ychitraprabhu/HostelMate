@@ -4,7 +4,7 @@ const db = require('../db/connection');
 const getAllUsers = async (req, res) => {
   try {
     // Excluding passwords for security
-    const [users] = await db.query('SELECT id, name, email, role, created_at FROM users');
+    const [users] = await db.query('SELECT id, name, email, role, created_at FROM users ORDER BY FIELD(role, "admin", "owner", "student"), id ASC');
     res.json(users);
   } catch (err) {
     console.error(err);
