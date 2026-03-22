@@ -75,7 +75,7 @@ async function loadHostelDetails(id) {
         document.getElementById('hostelName').textContent = currentHostel.name;
         document.getElementById('hostelLoc').textContent = currentHostel.location;
         document.getElementById('hostelDesc').textContent = currentHostel.description;
-        document.getElementById('hostelImg').src = currentHostel.image_url ? `http://localhost:5000${currentHostel.image_url}` : 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80';
+        document.getElementById('hostelImg').src = getHostelImage(currentHostel.image_url);
         
         document.getElementById('ownerName').textContent = "Owner: " + (currentHostel.owner_name || "Verified Provider");
         document.getElementById('chatBtn').href = `chat.html?hostel_id=${id}&owner_id=${currentHostel.owner_id}`;

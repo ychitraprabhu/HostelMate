@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.origin.includes('localhost') 
+    ? 'http://localhost:5000/api' 
+    : '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     setupNavbar();
@@ -52,4 +54,11 @@ function logout() {
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
+}
+
+function getHostelImage(url) {
+    if (!url) return 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80';
+    if (url.startsWith('http')) return url;
+    // For local uploads, use relative path so it works on any domain
+    return url; 
 }

@@ -59,7 +59,7 @@ function renderHostels(hostels) {
 
     hostels.forEach(h => {
         const rating = h.avg_rating > 0 ? Number(h.avg_rating).toFixed(1) : 'New';
-        const img = h.image_url ? `http://localhost:5000${h.image_url}` : 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=400&q=80';
+        const img = getHostelImage(h.image_url);
         
         grid.innerHTML += `
             <div class="hostel-card card">
